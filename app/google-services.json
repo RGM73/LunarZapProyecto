@@ -7,36 +7,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:42077770042:android:2184bd3ebf96a568cb4003",
-        "android_client_info": {
-          "package_name": "com.example.lunarzap"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "42077770042-m9eqeurvjsoeh01rbosnbcjiojmqsvb4.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCjk9NiNCtCKofucXI1jZk7yz0BzPqxBT4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "42077770042-lqam4l1aaks2fagk3bjmsqvdpb7fo7te.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:42077770042:android:f9bb0c22726a216dcb4003",
+        "mobilesdk_app_id": "1:42077770042:android:f7738a3662193fc3cb4003",
         "android_client_info": {
           "package_name": "com.example.myapplication"
         }

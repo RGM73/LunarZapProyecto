@@ -1,3 +1,25 @@
 <resources>
     <string name="app_name">My Application</string>
+    <string name="title_activity_principal">Perfil de una Persona</string>
+    <string name="large_text">
+        "Soy una persona apasionada por el arte y la creatividad, por lo que me desempeño como artista plástico y diseñador gráfico. Mi estilo se enfoca en la abstracción y en el uso de colores vibrantes y formas geométricas, lo que me permite crear obras únicas y expresivas. Además, soy un amante de la naturaleza y de los viajes, por lo que siempre trato de incorporar elementos naturales en mis creaciones.
+
+Soy un profesional en el campo de la tecnología, especializado en el desarrollo de aplicaciones móviles. Me encanta trabajar en proyectos desafiantes y creativos, utilizando las últimas tecnologías y metodologías de desarrollo para ofrecer soluciones innovadoras y de alta calidad. Fuera del trabajo, disfruto del deporte y de la música electrónica, lo que me permite mantener un equilibrio entre el trabajo y la vida personal.
+
+Como psicólogo clínico, mi principal objetivo es ayudar a las personas a superar sus problemas emocionales y mejorar su calidad de vida. Me especializo en la terapia cognitivo-conductual y en el tratamiento de trastornos de ansiedad y depresión. También me interesa la investigación en el campo de la psicología, lo que me permite estar siempre actualizado en las últimas tendencias y avances en el área.
+
+Soy un entusiasta de los deportes extremos y de la vida al aire libre. Practico el snowboard, el surf y el paracaidismo, entre otros. Además, tengo experiencia como guía turístico en zonas montañosas y boscosas, lo que me permite compartir mi pasión por la naturaleza con otras personas. Fuera de las actividades al aire libre, disfruto de la lectura de novelas de aventuras y de la música rock.
+
+Soy un abogado especializado en derecho penal, con experiencia en la defensa de casos complejos y de alta complejidad. Me apasiona trabajar en la defensa de los derechos de las personas y en la lucha contra la injusticia. Además, soy un viajero empedernido y un fotógrafo aficionado, lo que me permite capturar y documentar los lugares que visito."
+    </string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
 </resources>
