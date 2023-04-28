@@ -48,33 +48,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-
-        SignInButton googleSignInButton = findViewById(R.id.google_sign_in_button);
-        googleSignInButton.setSize(SignInButton.SIZE_WIDE);
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-        googleSignInButton.setOnClickListener(view -> {
-            createSignInIntent();
-        });
-        Button amigo=findViewById(R.id.button2);
-        amigo.setOnClickListener(new View.OnClickListener() {
+        getSupportActionBar().hide();
+        Button iniciar_sesion=findViewById(R.id.signInButton);
+        iniciar_sesion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, Perfil.class);
-                startActivity(intent);
-            }
-        });
-        Button principal=findViewById(R.id.button3);
-        principal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, Principal.class);
-                startActivity(intent);
+                createSignInIntent();
             }
         });
     }
@@ -101,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         if (result.getResultCode() == RESULT_OK) {
             // Successfully signed in
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            startActivity(new Intent(MainActivity.this,Principal.class));
             // ...
         } else {
             // Sign in failed. If response is null the user canceled the

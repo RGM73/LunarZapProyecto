@@ -1,10 +1,15 @@
 package com.example.myapplication;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -13,6 +18,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,8 +45,17 @@ public class Principal extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         diffSeconds=0;
         setContentView(R.layout.activity_principal);
+        getSupportActionBar().hide();
         textView2 = findViewById(R.id.textView2);
         textView3 = findViewById(R.id.textView3);
+        Button amigo=findViewById(R.id.button2);
+        amigo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Principal.this, Perfil.class);
+                startActivity(intent);
+            }
+        });
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://api.sunrise-sunset.org/json?lat=40.4165&lng=-3.70256&date=today";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -97,6 +112,30 @@ public class Principal extends AppCompatActivity {
                 textView2.setText("¡Ya ha anochecido!");
             }
         }.start();
+        BottomNavigationView bottomNavigationView = (BottomNavigationView)
+                findViewById(R.id.bottom_navigation_view);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.action_home:
+                                // Manejar la selección de "Inicio"
+                                return true;
+                            case R.id.action_search:
+                                // Manejar la selección de "Buscar"
+                                return true;
+                            case R.id.action_add:
+                                // Manejar la selección de "Agregar"
+                                return true;
+                            case R.id.action_profile:
+                                // Manejar la selección de "Perfil"
+                                return true;
+                        }
+                        return false;
+                    }
+                });
 
 
     }

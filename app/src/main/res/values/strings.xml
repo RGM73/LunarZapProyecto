@@ -24,4 +24,9 @@ Soy un abogado especializado en derecho penal, con experiencia en la defensa de 
     <string name="login_failed">"Login failed"</string>
     <string name="mensaje_hora">Estate preparado en</string>
     <string name="mensaje_anochecer">LunarZap empieza a las:</string>
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="add">Add</string>
+    <string name="profile">Profile</string>
+
 </resources>
