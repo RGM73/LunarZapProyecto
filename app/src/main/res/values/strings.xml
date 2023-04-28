@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">LunarZap</string>
     <string name="title_activity_principal">Perfil de una Persona</string>
     <string name="large_text">
         "Soy una persona apasionada por el arte y la creatividad, por lo que me desempeño como artista plástico y diseñador gráfico. Mi estilo se enfoca en la abstracción y en el uso de colores vibrantes y formas geométricas, lo que me permite crear obras únicas y expresivas. Además, soy un amante de la naturaleza y de los viajes, por lo que siempre trato de incorporar elementos naturales en mis creaciones.
@@ -22,4 +22,6 @@ Soy un abogado especializado en derecho penal, con experiencia en la defensa de 
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="mensaje_hora">Estate preparado en</string>
+    <string name="mensaje_anochecer">LunarZap empieza a las:</string>
 </resources>

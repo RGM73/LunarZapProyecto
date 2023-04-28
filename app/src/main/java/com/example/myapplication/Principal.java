@@ -69,8 +69,18 @@ public class Principal extends AppCompatActivity {
                 });
 
         queue.add(jsonObjectRequest);
-
-        new CountDownTimer( 1000*1000, 1000) {
+        LocalTime now = LocalTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
+        LocalTime anochecer=null;
+        if (horaFormateada != null && !horaFormateada.isEmpty()) {
+             anochecer= LocalTime.parse(horaFormateada, formatter);
+            // rest of your code
+        } else {
+            LocalTime hora = LocalTime.of(21,8);
+            anochecer=hora;
+        }
+        long diffSeconds = ChronoUnit.SECONDS.between(now, anochecer);
+        new CountDownTimer( diffSeconds*1000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 long secondsUntilFinished = millisUntilFinished / 1000;
