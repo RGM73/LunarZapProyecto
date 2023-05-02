@@ -28,5 +28,12 @@ Soy un abogado especializado en derecho penal, con experiencia en la defensa de 
     <string name="search">Search</string>
     <string name="add">Add</string>
     <string name="profile">Profile</string>
+    <string name="profile_name_hint">Escriba su nombre</string>
+    <string name="profile_email_hint">Escriba su email</string>
+    <string name="profile_date_hint">Escriba su fecha de nacimiento</string>
+    <string name="profile_user_hint">Escriba su Usuario</string>
+    <string name="save_button_text">Guardar</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

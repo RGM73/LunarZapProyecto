@@ -1,5 +1,7 @@
 package com.example.myapplication;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
@@ -7,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -23,16 +26,17 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    private GoogleApiClient mGoogleApiClient;
-
-    // [START auth_fui_create_launcher]
-    // See: https://developer.android.com/training/basics/intents/result
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
             new FirebaseAuthUIActivityResultContract(),
             new ActivityResultCallback<FirebaseAuthUIAuthenticationResult>() {
@@ -42,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
     );
-    // [END auth_fui_create_launcher]
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,40 +63,68 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void createSignInIntent() {
-        // [START auth_fui_create_intent]
-        // Choose authentication providers
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.EmailBuilder().build(),
                 new AuthUI.IdpConfig.GoogleBuilder().build());
 
-        // Create and launch sign-in intent
         Intent signInIntent = AuthUI.getInstance()
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
                 .build();
         signInLauncher.launch(signInIntent);
-        // [END auth_fui_create_intent]
     }
 
-    // [START auth_fui_result]
+
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
         IdpResponse response = result.getIdpResponse();
         if (result.getResultCode() == RESULT_OK) {
-            // Successfully signed in
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            String currentUserId = mAuth.getCurrentUser().getUid();
+            mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+                @Override
+                public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                    FirebaseUser currentUser = mAuth.getCurrentUser();
+                    if (currentUser != null) {
+                        DocumentReference userRef = db.collection("users").document(currentUserId);
+                        userRef.get().addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                if (document.exists()) {
+                                    // El usuario ya existe en la base de datos, no hace falta hacer nada
+                                } else {
+                                    // El usuario no existe en la base de datos, crear un nuevo documento para ese usuario
+                                    Map<String, Object> user = new HashMap<>();
+                                    user.put("Username", currentUser.getDisplayName());
+                                    user.put("email", currentUser.getEmail());
+                                    user.put("photo", currentUser.getPhotoUrl().toString());
+                                    user.put("biografia","");
+                                    user.put("Fecha_nac","1/1/1970");
+                                    user.put("Name","user");
+                                    userRef.set(user)
+                                            .addOnSuccessListener(aVoid -> {
+                                                Log.d(TAG, "User document created for " + currentUserId);
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Log.w(TAG, "Error creating user document for " + currentUserId, e);
+                                            });
+                                }
+                            } else {
+                                Log.d(TAG, "get failed with ", task.getException());
+                            }
+                        });
+                    }
+                }
+            });
             startActivity(new Intent(MainActivity.this,Principal.class));
-            // ...
         } else {
-            // Sign in failed. If response is null the user canceled the
-            // sign-in flow using the back button. Otherwise check
-            // response.getError().getErrorCode() and handle the error.
-            // ...
+            // Sign in failed
         }
     }
-    // [END auth_fui_result]
 
     public void signOut() {
-        // [START auth_fui_signout]
+
         AuthUI.getInstance()
                 .signOut(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -100,11 +132,9 @@ public class MainActivity extends AppCompatActivity {
                         // ...
                     }
                 });
-        // [END auth_fui_signout]
     }
 
     public void delete() {
-        // [START auth_fui_delete]
         AuthUI.getInstance()
                 .delete(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -113,25 +143,22 @@ public class MainActivity extends AppCompatActivity {
                         // ...
                     }
                 });
-        // [END auth_fui_delete]
     }
 
     public void themeAndLogo() {
         List<AuthUI.IdpConfig> providers = Collections.emptyList();
 
-        // [START auth_fui_theme_logo]
         Intent signInIntent = AuthUI.getInstance()
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
                 .build();
         signInLauncher.launch(signInIntent);
-        // [END auth_fui_theme_logo]
     }
 
     public void privacyAndTerms() {
         List<AuthUI.IdpConfig> providers = Collections.emptyList();
 
-        // [START auth_fui_pp_tos]
+
         Intent signInIntent = AuthUI.getInstance()
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
@@ -140,11 +167,11 @@ public class MainActivity extends AppCompatActivity {
                         "https://example.com/privacy.html")
                 .build();
         signInLauncher.launch(signInIntent);
-        // [END auth_fui_pp_tos]
+
     }
 
     public void emailLink() {
-        // [START auth_fui_email_link]
+
         ActionCodeSettings actionCodeSettings = ActionCodeSettings.newBuilder()
                 .setAndroidPackageName(
                         /* yourPackageName= */ "...",
@@ -165,13 +192,11 @@ public class MainActivity extends AppCompatActivity {
                 .setAvailableProviders(providers)
                 .build();
         signInLauncher.launch(signInIntent);
-        // [END auth_fui_email_link]
+
     }
 
     public void catchEmailLink() {
         List<AuthUI.IdpConfig> providers = Collections.emptyList();
-
-        // [START auth_fui_email_link_catch]
         if (AuthUI.canHandleIntent(getIntent())) {
             if (getIntent().getExtras() == null) {
                 return;
@@ -186,6 +211,5 @@ public class MainActivity extends AppCompatActivity {
                 signInLauncher.launch(signInIntent);
             }
         }
-        // [END auth_fui_email_link_catch]
     }
 }
