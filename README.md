@@ -7,9 +7,11 @@ Para utilizar nuestra red social, debes crear una cuenta. Una vez que hayas crea
 # Funciones principales
 Nuestra red social ofrece varias funciones principales para que puedas disfrutar de la experiencia de la comunidad en línea. Estas funciones incluyen:
 
-## Publicaciones: puedes compartir tus pensamientos, fotos y enlaces con la comunidad. También puedes comentar en las publicaciones de otros usuarios.
+## Publicaciones:
+Puedes compartir tus pensamientos, fotos y enlaces con la comunidad. También puedes comentar en las publicaciones de otros usuarios.
 
-## Notificaciones: recibirás notificaciones de las acciones de otros usuarios, como cuando te mencionan en una publicación o comentario, o cuando alguien te envía un mensaje.
+## Notificaciones: 
+Recibirás notificaciones de las acciones de otros usuarios, como cuando te mencionan en una publicación o comentario, o cuando alguien te envía un mensaje.
 
 # Política de privacidad
 Nos tomamos muy en serio la privacidad de nuestros usuarios y nos comprometemos a proteger la información personal que compartes con nosotros. Por favor, revisa nuestra política de privacidad para obtener más información sobre cómo utilizamos tu información.
