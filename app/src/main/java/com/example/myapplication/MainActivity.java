@@ -2,25 +2,26 @@ package com.example.myapplication;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.ActionCodeSettings;
@@ -29,7 +30,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,6 +42,10 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    private String currentUserId;
+    private DocumentReference userRef;
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
             new FirebaseAuthUIActivityResultContract(),
             new ActivityResultCallback<FirebaseAuthUIAuthenticationResult>() {
@@ -53,14 +62,71 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
-        Button iniciar_sesion=findViewById(R.id.signInButton);
-        iniciar_sesion.setOnClickListener(new View.OnClickListener() {
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        currentUserId = mAuth.getCurrentUser().getUid();
+        userRef = db.collection("users").document(currentUserId);
+
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    // El usuario ya existe en la base de datos, no hace falta hacer nada
+                } else {
+                    // El usuario no existe en la base de datos, crear un nuevo documento para ese usuario
+                    FirebaseUser currentUser = mAuth.getCurrentUser();
+                    if (currentUser != null) {
+                        Map<String, Object> user = new HashMap<>();
+                        user.put("Name", currentUser.getDisplayName());
+                        user.put("email", currentUser.getEmail());
+                        user.put("photo", currentUser.getPhotoUrl().toString());
+                        user.put("biografia", "Tu Biografia");
+                        user.put("Fecha_nac", "1/1/1970");
+                        user.put("Username", "user");
+                        userRef.set(user)
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d(TAG, "User document created for " + currentUserId);
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.w(TAG, "Error creating user document for " + currentUserId, e);
+                                });
+                        FirebaseStorage storage = FirebaseStorage.getInstance();
+                        String photoUrl = currentUser.getPhotoUrl().toString();
+                        Glide.with(this)
+                                .asBitmap()
+                                .load(photoUrl)
+                                .into(new SimpleTarget<Bitmap>() {
+                                    @Override
+                                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                        // Subir la imagen a Firebase Storage
+                                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                        resource.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                                        byte[] data = baos.toByteArray();
+                                        String path = "users/" + currentUserId + "/profile.jpg";
+                                        StorageReference ref = storage.getReference().child(path);
+                                        UploadTask uploadTask = ref.putBytes(data);
+                                        uploadTask.addOnSuccessListener(taskSnapshot -> {
+                                            Log.d(TAG, "Image uploaded successfully");
+                                        }).addOnFailureListener(e -> {
+                                            Log.e(TAG, "Error uploading image", e);
+                                        });
+                                    }
+                                });
+                    }
+                }
+            } else {
+                Log.d(TAG, "get failed with ", task.getException());
+            }
+        });
+        Button btn = findViewById(R.id.signInButton);
+        btn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 createSignInIntent();
             }
         });
     }
+
 
     public void createSignInIntent() {
         List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -78,46 +144,8 @@ public class MainActivity extends AppCompatActivity {
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
         IdpResponse response = result.getIdpResponse();
         if (result.getResultCode() == RESULT_OK) {
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            FirebaseAuth mAuth = FirebaseAuth.getInstance();
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            String currentUserId = mAuth.getCurrentUser().getUid();
-            mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
-                @Override
-                public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                    FirebaseUser currentUser = mAuth.getCurrentUser();
-                    if (currentUser != null) {
-                        DocumentReference userRef = db.collection("users").document(currentUserId);
-                        userRef.get().addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                DocumentSnapshot document = task.getResult();
-                                if (document.exists()) {
-                                    // El usuario ya existe en la base de datos, no hace falta hacer nada
-                                } else {
-                                    // El usuario no existe en la base de datos, crear un nuevo documento para ese usuario
-                                    Map<String, Object> user = new HashMap<>();
-                                    user.put("Username", currentUser.getDisplayName());
-                                    user.put("email", currentUser.getEmail());
-                                    user.put("photo", currentUser.getPhotoUrl().toString());
-                                    user.put("biografia","");
-                                    user.put("Fecha_nac","1/1/1970");
-                                    user.put("Name","user");
-                                    userRef.set(user)
-                                            .addOnSuccessListener(aVoid -> {
-                                                Log.d(TAG, "User document created for " + currentUserId);
-                                            })
-                                            .addOnFailureListener(e -> {
-                                                Log.w(TAG, "Error creating user document for " + currentUserId, e);
-                                            });
-                                }
-                            } else {
-                                Log.d(TAG, "get failed with ", task.getException());
-                            }
-                        });
-                    }
-                }
-            });
-            startActivity(new Intent(MainActivity.this,Principal.class));
+            // Successfully signed in
+            startActivity(new Intent(MainActivity.this, Principal.class));
         } else {
             // Sign in failed
         }

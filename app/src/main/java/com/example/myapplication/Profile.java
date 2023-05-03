@@ -16,13 +16,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -46,15 +49,24 @@ public class Profile extends Fragment {
     public Profile() {
         // Required empty public constructor
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.activity_perfil_personal, container, false);
     }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        ImageView profileImageView = view.findViewById(R.id.profile_image_view);
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        Glide.with(this /* contexto */)
+                .load(currentUser.getPhotoUrl())
+                .into(profileImageView);
 
         saveButton = view.findViewById(R.id.save_button);
         nameTextView = view.findViewById(R.id.name_text_view);
@@ -83,7 +95,7 @@ public class Profile extends Fragment {
                 }
 
                 if (documentSnapshot != null && documentSnapshot.exists()) {
-                    String name = documentSnapshot.getString("Nombre");
+                    String name = documentSnapshot.getString("Name");
                     String username = documentSnapshot.getString("Username");
                     String email = documentSnapshot.getString("email");
                     String photoUrl = documentSnapshot.getString("photo");
@@ -91,7 +103,11 @@ public class Profile extends Fragment {
                     String biografia = documentSnapshot.getString("biografia");
 
                     // Set the values to the UI components
-
+                    nameTextView.setText(name);
+                    usernameTextView.setText(username);
+                    emailTextView.setText(email);
+                    dateTextView.setText(date);
+                    biografiaTextView.setText(biografia);
                 } else {
                     Log.d(TAG, "Current data: null");
                 }
@@ -136,15 +152,20 @@ public class Profile extends Fragment {
         });
 
     }
+
     public void updateInfo() {
         Map<String, Object> updates = new HashMap<>();
         //updates
+        updates.put("Name", nameEditText.getText().toString());
+        updates.put("Username", usernameEditText.getText().toString());
+        updates.put("Fecha_nac", dateEditText.getText().toString());
+        updates.put("biografia", biografiaEditText.getText().toString());
 
         userDoc.update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 saveButton.setVisibility(View.GONE);
-                //Toast.makeText(PerfilPersonal.this, "Profile updated", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(), "Profile updated", Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override

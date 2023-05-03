@@ -76,8 +76,14 @@ public class Principal extends AppCompatActivity {
                                 transaction3.addToBackStack(null);
                                 transaction3.commit();
                                 return true;
+                            default:
+                                fragment = new Home();
+                                transaction = getSupportFragmentManager().beginTransaction();
+                                transaction.replace(R.id.fragment_container, fragment);
+                                transaction.addToBackStack(null);
+                                transaction.commit();
+                                return true;
                         }
-                        return false;
                     }
                 });
 
