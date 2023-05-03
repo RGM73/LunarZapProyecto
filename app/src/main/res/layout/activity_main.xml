@@ -6,13 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
     <TextView
         android:id="@+id/textView"
-        android:layout_width="120dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="156dp"
-        android:layout_marginTop="164dp"
-        android:text="Bienvenido a LunarZap"
+        android:layout_width="278dp"
+        android:layout_height="151dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="148dp"
+        android:gravity="center"
+        android:shadowColor="#000000"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="4"
+        android:text="@string/bienvenido"
+        android:textColor="#4CAF50"
+        android:textSize="36sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -20,9 +29,10 @@
         android:id="@+id/signInButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="108dp"
-        android:layout_marginTop="400dp"
-        android:text="Iniciar Sesion"
+        android:layout_marginStart="140dp"
+        android:layout_marginTop="412dp"
+        android:background="@drawable/button_background"
+        android:text="@string/sign_in_button_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

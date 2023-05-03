@@ -8,19 +8,55 @@
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="342dp"
-        android:layout_height="168dp"
-        android:layout_marginStart="84dp"
-        android:layout_marginTop="368dp"
-        android:text="TextView"
-        android:textColor="@color/design_default_color_error"
-        android:textSize="48sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation_view"
+        app:layout_constraintTop_toTopOf="parent" >
 
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="342dp"
+            android:layout_height="168dp"
+            android:layout_marginStart="35dp"
+            android:layout_marginTop="400dp"
+            android:textAlignment="center"
+            android:text="00:00:00"
+            android:textColor="@color/design_default_color_error"
+            android:textSize="48sp" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="342dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="35dp"
+            android:layout_marginTop="200dp"
+            android:textAlignment="center"
+            android:text="00:00:00"
+            android:textColor="@color/teal_200"
+            android:textSize="32sp" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="269dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="75dp"
+            android:layout_marginTop="355dp"
+            android:text="@string/mensaje_hora"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="216dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="100dp"
+            android:layout_marginTop="150dp"
+            android:text="@string/mensaje_anochecer"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </FrameLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_view"
@@ -29,39 +65,4 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_navigation_menu"
         tools:layout_editor_absoluteX="0dp" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="188dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="120dp"
-        android:layout_marginTop="136dp"
-        android:text="TextView"
-        android:textColor="@color/teal_200"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="269dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="84dp"
-        android:layout_marginTop="112dp"
-        android:text="@string/mensaje_hora"
-        android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
-
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="216dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="108dp"
-        android:layout_marginTop="92dp"
-        android:text="@string/mensaje_anochecer"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

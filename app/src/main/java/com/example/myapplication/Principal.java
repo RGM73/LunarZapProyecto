@@ -42,15 +42,6 @@ public class Principal extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_empty);
         getSupportActionBar().hide();
-//        Button amigo=findViewById(R.id.button2);
-//        amigo.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(Principal.this, Perfil.class);
-//                startActivity(intent);
-//            }
-//        });
-
         BottomNavigationView bottomNavigationView = (BottomNavigationView)
                 findViewById(R.id.bottom_navigation_view);
 
@@ -67,23 +58,22 @@ public class Principal extends AppCompatActivity {
                                 transaction.commit();
                                 return true;
                             case R.id.action_search:
-                                // Implementar acción de búsqueda
+                                Search fragment2 = new Search();
+                                FragmentTransaction transaction2 = getSupportFragmentManager().beginTransaction();
+                                transaction2.replace(R.id.fragment_container, fragment2);
+                                transaction2.addToBackStack(null);
+                                transaction2.commit();
                                 return true;
                             case R.id.action_profile:
-                                Profile fragment2 = new Profile();
+                                Profile fragment3 = new Profile();
                                 FragmentTransaction transaction3 = getSupportFragmentManager().beginTransaction();
-                                transaction3.replace(R.id.fragment_container, fragment2);
+                                transaction3.replace(R.id.fragment_container, fragment3);
                                 transaction3.addToBackStack(null);
                                 transaction3.commit();
                                 return true;
-                            default:
-                                fragment = new Home();
-                                transaction = getSupportFragmentManager().beginTransaction();
-                                transaction.replace(R.id.fragment_container, fragment);
-                                transaction.addToBackStack(null);
-                                transaction.commit();
-                                return true;
+
                         }
+                        return false;
                     }
                 });
 

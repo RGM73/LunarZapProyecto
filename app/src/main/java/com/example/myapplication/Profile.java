@@ -120,8 +120,6 @@ public class Profile extends Fragment {
                 nameEditText.setVisibility(View.VISIBLE);
                 usernameTextView.setVisibility(View.GONE);
                 usernameEditText.setVisibility(View.VISIBLE);
-                emailTextView.setVisibility(View.GONE);
-                emailEditText.setVisibility(View.VISIBLE);
                 dateTextView.setVisibility(View.GONE);
                 dateEditText.setVisibility(View.VISIBLE);
                 biografiaTextView.setVisibility(View.GONE);
@@ -129,6 +127,10 @@ public class Profile extends Fragment {
                 editButton.setVisibility(View.GONE);
                 saveButton.setVisibility(View.VISIBLE);
                 nameEditText.setText(nameTextView.getText());
+                dateEditText.setText(dateTextView.getText());
+                biografiaEditText.setText(biografiaTextView.getText());
+                usernameEditText.setText(usernameTextView.getText());
+
             }
         });
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -139,15 +141,12 @@ public class Profile extends Fragment {
                 nameEditText.setVisibility(View.GONE);
                 usernameTextView.setVisibility(View.VISIBLE);
                 usernameEditText.setVisibility(View.GONE);
-                emailTextView.setVisibility(View.VISIBLE);
-                emailEditText.setVisibility(View.GONE);
                 dateTextView.setVisibility(View.VISIBLE);
                 dateEditText.setVisibility(View.GONE);
                 biografiaTextView.setVisibility(View.VISIBLE);
                 biografiaEditText.setVisibility(View.GONE);
                 editButton.setVisibility(View.VISIBLE);
                 saveButton.setVisibility(View.GONE);
-                nameEditText.setText(nameTextView.getText());
             }
         });
 

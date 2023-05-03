@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -59,8 +60,9 @@ public class Home extends Fragment {
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm:ss a");
                             LocalTime time = LocalTime.parse(sunset, formatter);
                             LocalTime horaMas2 = time.plusHours(2);
-                            horaFormateada = horaMas2.format(formatter);
-                            textView3.setText(horaFormateada);
+                            horaFormateada = time.format(formatter);
+                            String inicio=horaMas2.format(formatter);
+                            textView3.setText(inicio);
 
                             LocalTime now = LocalTime.now();
                             formatter = DateTimeFormatter.ofPattern("h:mm:ss a");
@@ -72,7 +74,7 @@ public class Home extends Fragment {
                                 anochecer = hora;
                             }
                             long diffSeconds = ChronoUnit.SECONDS.between(now, anochecer);
-                            new CountDownTimer(diffSeconds * 1000, 1000) {
+                            new CountDownTimer(10 * 1000, 1000) {//cambiar por diffSeconds*1000 cuando no haya que hacer pruebas
 
                                 public void onTick(long millisUntilFinished) {
                                     long secondsUntilFinished = millisUntilFinished / 1000;
@@ -86,7 +88,13 @@ public class Home extends Fragment {
                                 }
 
                                 public void onFinish() {
-                                    textView2.setText("¡Ya ha anochecido!");
+                                    Feed fragmento = new Feed();
+                                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+                                    // Reemplazar el fragmento actual por el nuevo
+                                    transaction.replace(R.id.fragment_container, fragmento);
+                                    transaction.addToBackStack(null);
+                                    transaction.commit();
                                 }
                             }.start();
 

@@ -1,91 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/profile_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="16dp">
+
     <ImageView
         android:id="@+id/profile_image_view"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:src="@drawable/default_profile_image"
+        android:layout_gravity="center_horizontal"
         android:scaleType="centerCrop"
-        android:layout_gravity="center_horizontal" />
+        android:src="@drawable/default_profile_image" />
 
     <Button
         android:id="@+id/edit_profile_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Editar perfil" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#4CAF50"
+        android:elevation="4dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:text="@string/edit_profile"
+        android:textColor="#ffffff" />
 
     <TextView
         android:id="@+id/name_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nombre"  />
+        android:layout_marginTop="32dp"
+        android:hint="@string/name"
+        android:textColor="#4CAF50"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/name_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nombre"
+        android:backgroundTint="#ffffff"
+        android:hint="@string/name"
+        android:textColor="#000000"
         android:visibility="gone" />
 
     <TextView
         android:id="@+id/email_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Correo electrónico" />
+        android:layout_marginTop="16dp"
+        android:hint="@string/email"
+        android:textColor="#4CAF50"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/email_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Correo electrónico"
-        android:visibility="gone" />
+        android:backgroundTint="#ffffff"
+        android:hint="@string/email"
+        android:textColor="#000000"
+        android:visibility="gone"
+        android:enabled="false"/>
+
     <TextView
         android:id="@+id/date_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Fecha Nacimiento" />
+        android:layout_marginTop="16dp"
+        android:hint="@string/date"
+        android:textColor="#4CAF50"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
     <EditText
         android:id="@+id/date_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Fecha de Nacimiento"
+        android:backgroundTint="#ffffff"
+        android:hint="@string/date"
+        android:textColor="#000000"
         android:visibility="gone" />
+
     <TextView
         android:id="@+id/username_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nombre de usuario" />
+        android:layout_marginTop="16dp"
+        android:hint="@string/user"
+        android:textColor="#4CAF50"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
     <EditText
         android:id="@+id/username_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nombre de usuario"
+        android:backgroundTint="#ffffff"
+        android:hint="@string/user"
+        android:textColor="#000000"
         android:visibility="gone" />
     <TextView
         android:id="@+id/biografia_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Biografia" />
+        android:layout_marginTop="16dp"
+        android:hint="@string/bio"
+        android:textColor="#4CAF50"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
     <EditText
         android:id="@+id/biografia_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Tu Biografia"
+        android:backgroundTint="#ffffff"
+        android:hint="@string/bio"
+        android:textColor="#000000"
         android:visibility="gone" />
-
     <Button
         android:id="@+id/save_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp"
-        android:visibility="gone"
-        android:text="Guardar cambios" />
+        android:backgroundTint="#4CAF50"
+        android:elevation="4dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:text="@string/save"
+        android:textColor="#ffffff"
+        android:visibility="gone"/>
 
 </LinearLayout>
+        
+
 
