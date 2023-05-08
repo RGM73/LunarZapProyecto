@@ -9,45 +9,81 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
+
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+    private List<ZAP> mZAPList;
 
-    private List<ZAP> mData;
-
-    // Constructor que recibe los datos
-    public MyAdapter(List<ZAP> data) {
-        mData = data;
+    public MyAdapter(List<ZAP> ZAPList) {
+        mZAPList = ZAPList;
     }
 
-    // Crea una nueva vista para cada elemento del RecyclerView
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.my_item_layout, parent, false);
-        ViewHolder viewHolder = new ViewHolder(view);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Context context = parent.getContext();
+        LayoutInflater inflater = LayoutInflater.from(context);
+
+        // Inflate the custom layout
+        View ZAPView = inflater.inflate(R.layout.zap, parent, false);
+
+        // Return a new holder instance
+        ViewHolder viewHolder = new ViewHolder(ZAPView);
         return viewHolder;
     }
 
-    // Asigna los datos a cada vista del RecyclerView
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        ZAP data = mData.get(position);
-        holder.textView.setText(data.getText());
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        // Get the data model based on position
+        ZAP zap = mZAPList.get(position);
+
+        // Set item views based on your views and data model
+        TextView usernameTextView = holder.usernameTextView;
+        usernameTextView.setText(zap.getUsuario());
+
+        TextView contentTextView = holder.contentTextView;
+        contentTextView.setText(zap.getContenido());
+
+        TextView datetimeTextView = holder.datetimeTextView;
+        datetimeTextView.setText(zap.getFecha().toString());
+
+//        TextView likesTextView = holder.likesTextView;
+//        likesTextView.setText("Likes: " + zap.getLikes());
+//
+//        TextView dislikesTextView = holder.dislikesTextView;
+//        dislikesTextView.setText("Dislikes: " + zap.getDislikes());
     }
 
-    // Devuelve la cantidad de elementos en los datos
     @Override
     public int getItemCount() {
-        return mData.size();
+        return mZAPList.size();
     }
 
-    // Define la clase ViewHolder, que representa cada vista en el RecyclerView
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-
-        public TextView textView;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        public TextView usernameTextView;
+        public TextView contentTextView;
+        public TextView datetimeTextView;
+        public TextView likesTextView;
+        public TextView dislikesTextView;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            textView = itemView.findViewById(R.id.text_view);
+
+            usernameTextView = (TextView) itemView.findViewById(R.id.username_text);
+            contentTextView = (TextView) itemView.findViewById(R.id.content_text);
+            datetimeTextView = (TextView) itemView.findViewById(R.id.datetime_text);
+           // likesTextView = (TextView) itemView.findViewById(R.id.likes_text);
+           // dislikesTextView = (TextView) itemView.findViewById(R.id.dislikes_text);
         }
     }
 }

@@ -1,0 +1,82 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/avatar_image"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@drawable/profile"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/username_text"
+        app:layout_constraintEnd_toStartOf="@id/username_text"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/username_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Usuario"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/avatar_image"
+        android:layout_marginStart="16dp"/>
+
+    <TextView
+        android:id="@+id/content_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Contenido del tweet"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/username_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"/>
+
+    <TextView
+        android:id="@+id/datetime_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fecha y hora"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/content_text"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"/>
+    <Button
+        android:id="@+id/like_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/like"
+        android:textAllCaps="false"
+        android:text="Like"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/datetime_text"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"/>
+
+    <Button
+        android:id="@+id/dislike_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/dislike"
+        android:text="Dislike"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toEndOf="@id/like_button"
+        app:layout_constraintTop_toBottomOf="@id/datetime_text"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
