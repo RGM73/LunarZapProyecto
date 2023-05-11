@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,7 +21,7 @@ public class Feed extends Fragment {
 
     private RecyclerView recyclerView;
     private MyAdapter adapter;
-    Button button;
+    FloatingActionButton button;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

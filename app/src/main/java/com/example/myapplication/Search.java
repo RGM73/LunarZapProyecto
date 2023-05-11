@@ -29,6 +29,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Search extends Fragment {
     private EditText searchEditText;
     private Button searchButton;
@@ -47,25 +50,29 @@ public class Search extends Fragment {
                 String searchTerm = searchEditText.getText().toString().trim();
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-                Query query = db.collection("users")
-                        .whereEqualTo("Username", searchTerm);
+                List<DocumentSnapshot> results = new ArrayList<>();
 
-                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (DocumentSnapshot document : task.getResult()) {
-                                // Se encontró el usuario con el nombre de usuario buscado
-                                //Usuario usuarioEncontrado = document.toObject(Usuario.class);
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                                // Haz algo con el usuario encontrado
+                for (int i = 1; i <= searchTerm.length(); i++) {
+                    String subTerm = searchTerm.substring(0, i);
+                    Query query = db.collection("usuarios")
+                            .whereGreaterThanOrEqualTo("Username", subTerm)
+                            .whereLessThanOrEqualTo("Username", subTerm + "\uf8ff");
+
+                    query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (DocumentSnapshot document : task.getResult()) {
+                                    // Se encontró el usuario que contiene la subcadena buscada
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    results.add(document);
+                                }
+                            } else {
+                                Log.d(TAG, "Error al buscar usuario: ", task.getException());
                             }
-                        } else {
-                            Log.d(TAG, "Error al buscar usuario: ", task.getException());
                         }
-                    }
-                });
-
+                    });
+                }
             }
         });
 

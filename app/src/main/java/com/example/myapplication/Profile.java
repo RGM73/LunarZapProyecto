@@ -2,14 +2,20 @@ package com.example.myapplication;
 
 import static android.content.ContentValues.TAG;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,20 +27,30 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 
 public class Profile extends Fragment {
@@ -45,6 +61,10 @@ public class Profile extends Fragment {
     Button saveButton, editButton;
     TextView nameTextView, usernameTextView, emailTextView, dateTextView, biografiaTextView;
     EditText nameEditText, usernameEditText, emailEditText, dateEditText, biografiaEditText;
+    ImageView profileImageView;
+    StorageReference storageRef;
+    FirebaseUser currentUser;
+    private static final int RESULTADO_SELECCIONAR_IMAGEN = 1;
 
     public Profile() {
         // Required empty public constructor
@@ -60,10 +80,10 @@ public class Profile extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        ImageView profileImageView = view.findViewById(R.id.profile_image_view);
+         storageRef = FirebaseStorage.getInstance().getReference();
+        profileImageView = view.findViewById(R.id.profile_image_view);
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+         currentUser = mAuth.getCurrentUser();
         Glide.with(this /* contexto */)
                 .load(currentUser.getPhotoUrl())
                 .into(profileImageView);
@@ -80,6 +100,7 @@ public class Profile extends Fragment {
         dateEditText = view.findViewById(R.id.date_edit_text);
         biografiaEditText = view.findViewById(R.id.biografia_edit_text);
         editButton = view.findViewById(R.id.edit_profile_button);
+        profileImageView = view.findViewById(R.id.profile_image_view);
         FirebaseApp.initializeApp(getActivity().getApplicationContext());
         db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
@@ -149,6 +170,12 @@ public class Profile extends Fragment {
                 saveButton.setVisibility(View.GONE);
             }
         });
+        profileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                imagenClickeada(getView());
+            }
+        });
 
     }
 
@@ -176,5 +203,57 @@ public class Profile extends Fragment {
 
     }
 
+    public void imagenClickeada(View view) {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), RESULTADO_SELECCIONAR_IMAGEN);
 
+        Toast.makeText(getActivity().getApplicationContext(), "Profile picture", Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RESULTADO_SELECCIONAR_IMAGEN && resultCode == Activity.RESULT_OK
+                && data != null && data.getData() != null) {
+            Uri uri = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+                String fileName = UUID.randomUUID().toString();
+                StorageReference fileRef = storageRef.child("users/"+currentUser.getUid()+"/" + fileName);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] datas = baos.toByteArray();
+
+                UploadTask uploadTask = fileRef.putBytes(datas);
+                uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            // La imagen se subió correctamente
+                            // Obtener la URL de descarga de la imagen
+                            fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    String imageUrl = uri.toString();
+                                    // Guardar la URL de descarga de la imagen en la base de datos de Firebase
+                                    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                                    DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("users").child(currentUser.getUid());
+                                    userRef.child("photo").setValue(imageUrl);//TODO:Actualizar
+                                }
+                            });
+                        } else {
+                            // Error al subir la imagen
+                            // Manejar el error
+                        }
+                    }
+                });
+                profileImageView.setImageBitmap(bitmap);//actualizar la imagen en la base de datos
+                Toast.makeText(getActivity().getApplicationContext(), uri.toString(), Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
