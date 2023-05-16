@@ -1,17 +1,24 @@
 package com.example.myapplication;
+import static android.content.ContentValues.TAG;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,32 +33,55 @@ public class Feed extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.activity_lunar_zap_feed, container, false);
         recyclerView = rootView.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new MyAdapter(generateMyDataList());
+        adapter = new MyAdapter(new ArrayList<>());
         recyclerView.setAdapter(adapter);
         button = rootView.findViewById(R.id.fab);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //abrir el fragment de crear zap
-                //getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CrearZap()).commit();
-
-
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CrearZap()).commit();
             }
         });
+
+        // Mover la llamada a generateMyDataList() después de configurar el adaptador
+        generateMyDataList();
+
         return rootView;
     }
 
-    private List<ZAP> generateMyDataList() {
-        // Aquí generas una lista de datos que quieras mostrar en el RecyclerView
-        List<String> List = new ArrayList<>();
-        List<ZAP> dataList = new ArrayList<>();
-        for(int i = 0; i < 14; i++) {
-            dataList.add(new ZAP("Hola", new Date(), "Usuario 1", 0, 0, List));
-        }
-         return dataList;
+    private void generateMyDataList() {
+        final List<ZAP> dataList = new ArrayList<>();
+
+        // Acceder a la instancia de Firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference zapCollectionRef = db.collection("zaps");
+
+        // Obtener los documentos de la colección "zaps"
+        zapCollectionRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (DocumentSnapshot document : task.getResult()) {
+                        // Obtener los datos de cada documento y crear un objeto ZAP
+                        String username = document.getString("username");
+                        Date date = document.getDate("date");
+                        String content = document.getString("content");
+                        int likes = document.getLong("likes").intValue();
+                        int dislikes = document.getLong("dislikes").intValue();
+
+                        ZAP zap = new ZAP(username, date, content, likes, dislikes, List.of("a", "b", "c"));
+                        dataList.add(zap);
+                    }
+
+                    // Actualizar la lista de datos del adaptador
+                    adapter.setDataList(dataList);
+                } else {
+                    Log.e(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
     }
 }

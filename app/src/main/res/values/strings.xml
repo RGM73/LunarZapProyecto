@@ -12,6 +12,7 @@ Soy un abogado especializado en derecho penal, con experiencia en la defensa de 
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
+    <string name="Content">Contenido del Zap que deseas compartir</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome !"</string>

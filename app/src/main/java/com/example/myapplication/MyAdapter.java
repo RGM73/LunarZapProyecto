@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,27 +43,26 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         return viewHolder;
     }
 
+    public void setDataList(List<ZAP> ZAPList) {
+        mZAPList = ZAPList;
+        notifyDataSetChanged();
+    }
+
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // Get the data model based on position
+        // Obtener el modelo de datos según la posición
         ZAP zap = mZAPList.get(position);
 
-        // Set item views based on your views and data model
-        TextView usernameTextView = holder.usernameTextView;
-        usernameTextView.setText(zap.getUsuario());
+        // Establecer los valores de los elementos de la vista
+        holder.usernameTextView.setText(zap.getUsuario() != null ? zap.getUsuario().toString() : "");
+        holder.contentTextView.setText(zap.getContenido() != null ? zap.getContenido().toString() : "");
+        holder.datetimeTextView.setText(zap.getFecha() != null ? zap.getFecha().toString() : "");
 
-        TextView contentTextView = holder.contentTextView;
-        contentTextView.setText(zap.getContenido());
-
-        TextView datetimeTextView = holder.datetimeTextView;
-        datetimeTextView.setText(zap.getFecha().toString());
-
-//        TextView likesTextView = holder.likesTextView;
-//        likesTextView.setText("Likes: " + zap.getLikes());
-//
-//        TextView dislikesTextView = holder.dislikesTextView;
-//        dislikesTextView.setText("Dislikes: " + zap.getDislikes());
+        holder.likeButton.setText("Likes: " + zap.getLikes());
+        holder.dislikeButton.setText("Dislikes: " + zap.getDislikes());
     }
+
+
 
     @Override
     public int getItemCount() {
@@ -75,6 +75,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         public TextView datetimeTextView;
         public TextView likesTextView;
         public TextView dislikesTextView;
+        public Button likeButton;
+        public Button dislikeButton;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -82,8 +84,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             usernameTextView = (TextView) itemView.findViewById(R.id.username_text);
             contentTextView = (TextView) itemView.findViewById(R.id.content_text);
             datetimeTextView = (TextView) itemView.findViewById(R.id.datetime_text);
-           // likesTextView = (TextView) itemView.findViewById(R.id.likes_text);
-           // dislikesTextView = (TextView) itemView.findViewById(R.id.dislikes_text);
+            likeButton = (Button) itemView.findViewById(R.id.like_button);
+            dislikeButton = (Button) itemView.findViewById(R.id.dislike_button);
+            // likesTextView = (TextView) itemView.findViewById(R.id.likes_text);
+            // dislikesTextView = (TextView) itemView.findViewById(R.id.dislikes_text);
         }
     }
 }
