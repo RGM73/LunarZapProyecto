@@ -3,8 +3,11 @@ package com.example.myapplication;
 import java.util.Date;
 import java.util.List;
 
-public class ZAP {
-
+public class ZAP implements Comparable<ZAP>{
+    @Override
+    public int compareTo(ZAP otherZap) {
+        return this.Fecha.compareTo(otherZap.getFecha());
+    }
     private String Contenido;
     private Date Fecha;
     private String Usuario;

@@ -21,6 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -66,18 +67,20 @@ public class Feed extends Fragment {
                 if (task.isSuccessful()) {
                     for (DocumentSnapshot document : task.getResult()) {
                         // Obtener los datos de cada documento y crear un objeto ZAP
-                        String username = document.getString("username");
-                        Date date = document.getDate("date");
-                        String content = document.getString("content");
+                        String username = document.getString("usuario");
+                        Date date = document.getDate("fecha");
+                        String content = document.getString("contenido");
                         int likes = document.getLong("likes").intValue();
                         int dislikes = document.getLong("dislikes").intValue();
 
-                        ZAP zap = new ZAP(username, date, content, likes, dislikes, List.of("a", "b", "c"));
+                        ZAP zap = new ZAP(content, date, username, likes, dislikes, new ArrayList<>());
                         dataList.add(zap);
                     }
+                    Collections.sort(dataList, Collections.reverseOrder());
 
                     // Actualizar la lista de datos del adaptador
                     adapter.setDataList(dataList);
+                    Log.d(TAG, "Data list updated. Size: " + dataList.size());
                 } else {
                     Log.e(TAG, "Error getting documents: ", task.getException());
                 }
@@ -85,3 +88,4 @@ public class Feed extends Fragment {
         });
     }
 }
+

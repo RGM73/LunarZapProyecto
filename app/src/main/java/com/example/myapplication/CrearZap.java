@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Date;
@@ -45,28 +46,55 @@ public class CrearZap extends Fragment {
                 CollectionReference zapCollectionRef = db.collection("zaps");
                 FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
                 FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+                CollectionReference userCollectionRef = db.collection("users");
                 if (currentUser == null) {
 
                 } else {
                     // El usuario no ha iniciado sesión o la sesión ha expirado.
 
                     // Crear un nuevo documento con los datos del ZAP
-                    ZAP zap = new ZAP(content.getText().toString(), new Date(),currentUser.getEmail(),0,0, List.of());
-                    zapCollectionRef.add(zap)
-                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    // Crear un nuevo documento con los datos del ZAP
+                    ZAP zap = new ZAP(content.getText().toString(), new Date(), "", 0, 0, List.of());
+                    // Obtener el nombre de usuario del usuario actual
+                    String userId = currentUser.getUid();
+                    userCollectionRef.document(userId).get()
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
-                                public void onSuccess(DocumentReference documentReference) {
-                                    Log.d(TAG, "ZAP agregado con ID: " + documentReference.getId());
-                                    // Aquí puedes realizar alguna acción adicional después de agregar el ZAP con éxito
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    if (documentSnapshot.exists()) {
+                                        String username = documentSnapshot.getString("Username");
+                                        // Asignar el nombre de usuario al ZAP
+                                        zap.setUsuario(username);
+
+                                        // Agregar el ZAP a la colección "zaps"
+                                        zapCollectionRef.add(zap)
+                                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                    @Override
+                                                    public void onSuccess(DocumentReference documentReference) {
+                                                        Log.d(TAG, "ZAP agregado con ID: " + documentReference.getId());
+                                                        // Aquí puedes realizar alguna acción adicional después de agregar el ZAP con éxito
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        Log.e(TAG, "Error al agregar el ZAP", e);
+                                                        // Aquí puedes manejar el caso de error si ocurre
+                                                    }
+                                                });
+                                    } else {
+                                        Log.d(TAG, "El documento del usuario no existe");
+                                    }
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    Log.e(TAG, "Error al agregar el ZAP", e);
+                                    Log.e(TAG, "Error al obtener el documento del usuario", e);
                                     // Aquí puedes manejar el caso de error si ocurre
                                 }
                             });
+
                 }
                 Feed fragmento = new Feed();
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
