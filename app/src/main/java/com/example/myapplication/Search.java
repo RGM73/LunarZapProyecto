@@ -21,6 +21,8 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -33,8 +35,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Search extends Fragment {
+    private RecyclerView recyclerView;
+    private AdaptadorPerfil adapter;
     private EditText searchEditText;
     private Button searchButton;
+    private List<PerfilSearch> results = new ArrayList<>();
 
     @Nullable
     @Override
@@ -43,6 +48,7 @@ public class Search extends Fragment {
 
         searchEditText = view.findViewById(R.id.searchEditText);
         searchButton = view.findViewById(R.id.searchButton);
+        recyclerView = view.findViewById(R.id.searchRecyclerView);
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,7 +56,7 @@ public class Search extends Fragment {
                 String searchTerm = searchEditText.getText().toString().trim();
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-                List<DocumentSnapshot> results = new ArrayList<>();
+                results.clear(); // Limpiar los resultados anteriores
 
                 for (int i = 1; i <= searchTerm.length(); i++) {
                     String subTerm = searchTerm.substring(0, i);
@@ -62,20 +68,37 @@ public class Search extends Fragment {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
+                                results.clear(); // Clear previous results
                                 for (DocumentSnapshot document : task.getResult()) {
-                                    // Se encontró el usuario que contiene la subcadena buscada
-                                    Log.d(TAG, document.getId() + " => " + document.getData());
-                                    results.add(document);
+                                    // Get the necessary data from the DocumentSnapshot
+                                    String username = document.getString("Username");
+                                    int photo = R.drawable.profile; // Change this to the correct resource for the profile image
+
+                                    // Create a PerfilSearch object
+                                    PerfilSearch perfilSearch = new PerfilSearch(username, photo);
+
+                                    // Add the PerfilSearch object to the results list
+                                    results.add(perfilSearch);
+                                }
+
+                                // Update the adapter with the new results
+                                if (adapter == null) {
+                                    adapter = new AdaptadorPerfil(results);
+                                    recyclerView.setAdapter(adapter);
+                                    recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                                } else {
+                                    adapter.setDataList(results);
                                 }
                             } else {
                                 Log.d(TAG, "Error al buscar usuario: ", task.getException());
                             }
                         }
                     });
+
                 }
             }
         });
-
         return view;
     }
 }
+
