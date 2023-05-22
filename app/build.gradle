@@ -6,7 +6,9 @@ plugins {
 android {
     namespace 'com.example.myapplication'
     compileSdk 33
-
+    dataBinding {
+        enabled = true
+    }
     defaultConfig {
         applicationId "com.example.myapplication"
         minSdk 28

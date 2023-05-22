@@ -24,9 +24,16 @@ import java.util.List;
 
 public class AdaptadorPerfil extends RecyclerView.Adapter<AdaptadorPerfil.ViewHolder> {
     private List<PerfilSearch> perfilSearchList;
+    private OnItemClickListener clickListener;
 
     public AdaptadorPerfil(List<PerfilSearch> PerfilSearch) {
         perfilSearchList = PerfilSearch;
+    }
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.clickListener = listener;
     }
 
     @NonNull
@@ -49,10 +56,18 @@ public class AdaptadorPerfil extends RecyclerView.Adapter<AdaptadorPerfil.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
+        final int itemPosition = position;
         PerfilSearch perfilSearch = perfilSearchList.get(position);
         holder.usernameTextView.setText(perfilSearch.getUsername() != null ? perfilSearch.getUsername().toString() : "");
        //holder.profileImageView.setImageResource(perfilSearch.getPhoto() != null ? perfilSearch.getPhoto().toString() : "");
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (clickListener != null) {
+                    clickListener.onItemClick(itemPosition);
+                }
+            }
+        });
     }
 
 

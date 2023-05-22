@@ -21,6 +21,7 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -60,30 +61,52 @@ public class Search extends Fragment {
 
                 for (int i = 1; i <= searchTerm.length(); i++) {
                     String subTerm = searchTerm.substring(0, i);
-                    Query query = db.collection("usuarios")
-                            .whereGreaterThanOrEqualTo("Username", subTerm)
-                            .whereLessThanOrEqualTo("Username", subTerm + "\uf8ff");
+                    Query query = db.collection("users")
+                            .whereGreaterThanOrEqualTo("Username", searchTerm)
+                            .whereLessThanOrEqualTo("Username", searchTerm + "\uf8ff");
 
                     query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
-                                results.clear(); // Clear previous results
+                                results.clear(); // Limpiar resultados anteriores
                                 for (DocumentSnapshot document : task.getResult()) {
-                                    // Get the necessary data from the DocumentSnapshot
+                                    // Obtener los datos necesarios del DocumentSnapshot
                                     String username = document.getString("Username");
-                                    int photo = R.drawable.profile; // Change this to the correct resource for the profile image
+                                    int photo = R.drawable.profile; // Cambia esto por el recurso correcto para la imagen de perfil
 
-                                    // Create a PerfilSearch object
+                                    // Crear un objeto PerfilSearch
                                     PerfilSearch perfilSearch = new PerfilSearch(username, photo);
 
-                                    // Add the PerfilSearch object to the results list
+                                    // Agregar el objeto PerfilSearch a la lista de resultados
                                     results.add(perfilSearch);
                                 }
 
-                                // Update the adapter with the new results
                                 if (adapter == null) {
                                     adapter = new AdaptadorPerfil(results);
+                                    adapter.setOnItemClickListener(new AdaptadorPerfil.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(int position) {
+                                            // Obtener el elemento seleccionado
+                                            PerfilSearch selectedPerfil = results.get(position);
+
+                                            // Crear un nuevo fragmento para mostrar los detalles del perfil
+                                            Perfil_Fragment detallePerfilFragment = new Perfil_Fragment();
+                                            // Pasar los datos del perfil al fragmento
+                                            Bundle bundle = new Bundle();
+                                            bundle.putString("username", selectedPerfil.getUsername());
+                                            bundle.putInt("photo", selectedPerfil.getPhoto());
+                                            detallePerfilFragment.setArguments(bundle);
+
+                                            // Navegar al fragmento de detalles del perfil
+                                            FragmentManager fragmentManager = getParentFragmentManager();
+                                            fragmentManager.beginTransaction()
+                                                    .replace(R.id.fragment_container, detallePerfilFragment)
+                                                    .addToBackStack(null)
+                                                    .commit();
+                                        }
+                                    });
+
                                     recyclerView.setAdapter(adapter);
                                     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                                 } else {

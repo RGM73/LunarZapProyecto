@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/avatar_image"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:src="@drawable/profile"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:text="Usuario"
         android:textColor="@color/black"
-        android:textSize="32sp"
+        android:textSize="22sp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@id/avatar_image"
         app:layout_constraintEnd_toEndOf="parent"
