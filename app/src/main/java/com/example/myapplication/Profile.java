@@ -80,14 +80,12 @@ public class Profile extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-         storageRef = FirebaseStorage.getInstance().getReference();
+        db = FirebaseFirestore.getInstance();
+        storageRef = FirebaseStorage.getInstance().getReference();
         profileImageView = view.findViewById(R.id.profile_image_view);
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-         currentUser = mAuth.getCurrentUser();
-        Glide.with(this /* contexto */)
-                .load(currentUser.getPhotoUrl())
-                .into(profileImageView);
-
+        currentUser = mAuth.getCurrentUser();
+        userDoc = db.collection("users").document(currentUser.getUid());
         saveButton = view.findViewById(R.id.save_button);
         nameTextView = view.findViewById(R.id.name_text_view);
         usernameTextView = view.findViewById(R.id.username_text_view);
@@ -102,11 +100,32 @@ public class Profile extends Fragment {
         editButton = view.findViewById(R.id.edit_profile_button);
         profileImageView = view.findViewById(R.id.profile_image_view);
         FirebaseApp.initializeApp(getActivity().getApplicationContext());
-        db = FirebaseFirestore.getInstance();
         usersRef = db.collection("users");
-        uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        userDoc = usersRef.document(uid);
-
+        db = FirebaseFirestore.getInstance();
+        storageRef = FirebaseStorage.getInstance().getReference();
+        profileImageView = view.findViewById(R.id.profile_image_view);
+        userDoc.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                String photoUrl = documentSnapshot.getString("photo");
+                if (photoUrl != null) {
+                    Glide.with(requireContext())
+                            .load(photoUrl)
+                            .into(profileImageView);
+                } else {
+                    // Si no hay una URL de foto en la base de datos, puedes establecer una imagen de placeholder predeterminada o dejarla vacía.
+                    // Por ejemplo:
+                    // profileImageView.setImageResource(R.drawable.placeholder_image);
+                    // O simplemente:
+                    // profileImageView.setImageDrawable(null);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Error getting user document", e);
+            }
+        });
         userDoc.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
@@ -129,11 +148,13 @@ public class Profile extends Fragment {
                     emailTextView.setText(email);
                     dateTextView.setText(date);
                     biografiaTextView.setText(biografia);
+
                 } else {
                     Log.d(TAG, "Current data: null");
                 }
             }
         });
+
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -211,6 +232,7 @@ public class Profile extends Fragment {
 
         Toast.makeText(getActivity().getApplicationContext(), "Profile picture", Toast.LENGTH_SHORT).show();
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -219,9 +241,9 @@ public class Profile extends Fragment {
                 && data != null && data.getData() != null) {
             Uri uri = data.getData();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
                 String fileName = UUID.randomUUID().toString();
-                StorageReference fileRef = storageRef.child("users/"+currentUser.getUid()+"/" + fileName);
+                StorageReference fileRef = storageRef.child("users/" + currentUser.getUid() + "/" + fileName);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                 byte[] datas = baos.toByteArray();
@@ -237,10 +259,26 @@ public class Profile extends Fragment {
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     String imageUrl = uri.toString();
-                                    // Guardar la URL de descarga de la imagen en la base de datos de Firebase
+                                    // Guardar la URL de descarga de la imagen en la base de datos de Firestore
                                     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                                    DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("users").child(currentUser.getUid());
-                                    userRef.child("photo").setValue(imageUrl);//TODO:Actualizar
+                                    DocumentReference userDoc = db.collection("users").document(currentUser.getUid());
+                                    userDoc.update("photo", imageUrl)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    // Actualización exitosa
+                                                    Glide.with(requireContext())
+                                                            .load(imageUrl)
+                                                            .into(profileImageView);
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    // Error al actualizar
+                                                    Log.e(TAG, "Error updating photo URL", e);
+                                                }
+                                            });
                                 }
                             });
                         } else {
@@ -249,11 +287,12 @@ public class Profile extends Fragment {
                         }
                     }
                 });
-                profileImageView.setImageBitmap(bitmap);//actualizar la imagen en la base de datos
                 Toast.makeText(getActivity().getApplicationContext(), uri.toString(), Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
+
 }
+
