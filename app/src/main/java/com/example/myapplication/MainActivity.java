@@ -42,10 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
-    private String currentUserId;
-    private DocumentReference userRef;
+
     private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(
             new FirebaseAuthUIActivityResultContract(),
             new ActivityResultCallback<FirebaseAuthUIAuthenticationResult>() {
@@ -62,62 +59,66 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
-        currentUserId = mAuth.getCurrentUser().getUid();
-        userRef = db.collection("users").document(currentUserId);
-
-        userRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    // El usuario ya existe en la base de datos, no hace falta hacer nada
-                } else {
-                    // El usuario no existe en la base de datos, crear un nuevo documento para ese usuario
-                    FirebaseUser currentUser = mAuth.getCurrentUser();
-                    if (currentUser != null) {
-                        Map<String, Object> user = new HashMap<>();
-                        user.put("Name", currentUser.getDisplayName());
-                        user.put("email", currentUser.getEmail());
-                        user.put("photo", currentUser.getPhotoUrl().toString());
-                        user.put("biografia", "Tu Biografia");
-                        user.put("Fecha_nac", "1/1/1970");
-                        user.put("Username", "user");
-                        userRef.set(user)
-                                .addOnSuccessListener(aVoid -> {
-                                    Log.d(TAG, "User document created for " + currentUserId);
-                                })
-                                .addOnFailureListener(e -> {
-                                    Log.w(TAG, "Error creating user document for " + currentUserId, e);
-                                });
-                        FirebaseStorage storage = FirebaseStorage.getInstance();
-                        String photoUrl = currentUser.getPhotoUrl().toString();
-                        Glide.with(this)
-                                .asBitmap()
-                                .load(photoUrl)
-                                .into(new SimpleTarget<Bitmap>() {
-                                    @Override
-                                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                                        // Subir la imagen a Firebase Storage
-                                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                        resource.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                                        byte[] data = baos.toByteArray();
-                                        String path = "users/" + currentUserId + "/profile.jpg";
-                                        StorageReference ref = storage.getReference().child(path);
-                                        UploadTask uploadTask = ref.putBytes(data);
-                                        uploadTask.addOnSuccessListener(taskSnapshot -> {
-                                            Log.d(TAG, "Image uploaded successfully");
-                                        }).addOnFailureListener(e -> {
-                                            Log.e(TAG, "Error uploading image", e);
-                                        });
-                                    }
-                                });
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            String currentUserId = mAuth.getCurrentUser().getUid();
+            DocumentReference userRef = db.collection("users").document(currentUserId);
+            userRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        // El usuario ya existe en la base de datos, no hace falta hacer nada
+                    } else {
+                        // El usuario no existe en la base de datos, crear un nuevo documento para ese usuario
+                        if (currentUser != null) {
+                            Map<String, Object> user = new HashMap<>();
+                            user.put("Name", currentUser.getDisplayName());
+                            user.put("email", currentUser.getEmail());
+                            user.put("photo", currentUser.getPhotoUrl().toString());
+                            user.put("biografia", "Tu Biografia");
+                            user.put("Fecha_nac", "1/1/1970");
+                            user.put("Username", "user");
+                            userRef.set(user)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d(TAG, "User document created for " + currentUserId);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.w(TAG, "Error creating user document for " + currentUserId, e);
+                                    });
+                            FirebaseStorage storage = FirebaseStorage.getInstance();
+                            String photoUrl = currentUser.getPhotoUrl().toString();
+                            Glide.with(this)
+                                    .asBitmap()
+                                    .load(photoUrl)
+                                    .into(new SimpleTarget<Bitmap>() {
+                                        @Override
+                                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                            // Subir la imagen a Firebase Storage
+                                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                            resource.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                                            byte[] data = baos.toByteArray();
+                                            String path = "users/" + currentUserId + "/profile.jpg";
+                                            StorageReference ref = storage.getReference().child(path);
+                                            UploadTask uploadTask = ref.putBytes(data);
+                                            uploadTask.addOnSuccessListener(taskSnapshot -> {
+                                                Log.d(TAG, "Image uploaded successfully");
+                                            }).addOnFailureListener(e -> {
+                                                Log.e(TAG, "Error uploading image", e);
+                                            });
+                                        }
+                                    });
+                        }
                     }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
                 }
-            } else {
-                Log.d(TAG, "get failed with ", task.getException());
-            }
-        });
+            });
+        } else {
+            // El usuario no está autenticado, tomar alguna acción como redirigir a la pantalla de inicio de sesión
+        }
+
         Button btn = findViewById(R.id.signInButton);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,12 +145,17 @@ public class MainActivity extends AppCompatActivity {
     private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
         IdpResponse response = result.getIdpResponse();
         if (result.getResultCode() == RESULT_OK) {
-            // Successfully signed in
+            // Autenticación exitosa, redirigir al usuario a la siguiente actividad
             startActivity(new Intent(MainActivity.this, Principal.class));
+            finish(); // Cierra la actividad actual para evitar que el usuario vuelva al inicio de sesión al presionar el botón "Atrás"
         } else {
-            // Sign in failed
+            // La autenticación falló
+            if (response != null) {
+                // Aquí puedes realizar alguna acción adicional según la respuesta de autenticación, como mostrar un mensaje de error
+            }
         }
     }
+
 
     public void signOut() {
 
