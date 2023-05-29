@@ -50,9 +50,6 @@ public class CrearZap extends Fragment {
                 if (currentUser == null) {
 
                 } else {
-                    // El usuario no ha iniciado sesión o la sesión ha expirado.
-
-                    // Crear un nuevo documento con los datos del ZAP
                     // Crear un nuevo documento con los datos del ZAP
                     ZAP zap = new ZAP(content.getText().toString(), new Date(), "", 0, 0, List.of());
                     // Obtener el nombre de usuario del usuario actual
@@ -72,14 +69,12 @@ public class CrearZap extends Fragment {
                                                     @Override
                                                     public void onSuccess(DocumentReference documentReference) {
                                                         Log.d(TAG, "ZAP agregado con ID: " + documentReference.getId());
-                                                        // Aquí puedes realizar alguna acción adicional después de agregar el ZAP con éxito
                                                     }
                                                 })
                                                 .addOnFailureListener(new OnFailureListener() {
                                                     @Override
                                                     public void onFailure(@NonNull Exception e) {
                                                         Log.e(TAG, "Error al agregar el ZAP", e);
-                                                        // Aquí puedes manejar el caso de error si ocurre
                                                     }
                                                 });
                                     } else {
@@ -91,7 +86,6 @@ public class CrearZap extends Fragment {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     Log.e(TAG, "Error al obtener el documento del usuario", e);
-                                    // Aquí puedes manejar el caso de error si ocurre
                                 }
                             });
 
