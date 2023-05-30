@@ -74,7 +74,7 @@ public class Home extends Fragment {
                                 anochecer = hora;
                             }
                             long diffSeconds = ChronoUnit.SECONDS.between(now, anochecer);
-                            new CountDownTimer(10 * 1000, 1000) {//cambiar por diffSeconds*1000 cuando no haya que hacer pruebas
+                            new CountDownTimer(diffSeconds * 1000, 1000) {//cambiar por diffSeconds*1000 cuando no haya que hacer pruebas
 
                                 public void onTick(long millisUntilFinished) {
                                     long secondsUntilFinished = millisUntilFinished / 1000;

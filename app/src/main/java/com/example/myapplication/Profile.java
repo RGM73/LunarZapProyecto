@@ -229,8 +229,6 @@ public class Profile extends Fragment {
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), RESULTADO_SELECCIONAR_IMAGEN);
-
-        Toast.makeText(getActivity().getApplicationContext(), "Profile picture", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -287,7 +285,6 @@ public class Profile extends Fragment {
                         }
                     }
                 });
-                Toast.makeText(getActivity().getApplicationContext(), uri.toString(), Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 e.printStackTrace();
             }

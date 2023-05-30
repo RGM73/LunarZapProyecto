@@ -47,7 +47,6 @@ public class Feed extends Fragment {
             }
         });
 
-        // Mover la llamada a generateMyDataList() después de configurar el adaptador
         generateMyDataList();
 
         return rootView;
