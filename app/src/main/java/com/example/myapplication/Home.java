@@ -26,7 +26,10 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
@@ -34,6 +37,7 @@ public class Home extends Fragment {
     TextView textView2, textView3;
     long diffSeconds;
     String horaFormateada;
+    LocalTime now=LocalTime.now();;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,12 +49,37 @@ public class Home extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        diffSeconds = 0;
+
         textView2 = getView().findViewById(R.id.textView2);
         textView3 = getView().findViewById(R.id.textView3);
+
+        loadData();
+    }
+
+    private void loadData() {
         RequestQueue queue = Volley.newRequestQueue(getActivity().getApplicationContext());
-        String url = "https://api.sunrise-sunset.org/json?lat=40.4165&lng=-3.70256&date=today";
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+        String apiKey = "NJA4REI4UTSY";
+        String url = "https://api.timezonedb.com/v2.1/get-time-zone?key=" + apiKey + "&format=json&by=zone&zone=Europe/Madrid";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    long unixTimestamp = response.getLong("timestamp");
+                    LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(unixTimestamp), ZoneId.systemDefault());
+                    now = localDateTime.toLocalTime().minusHours(2);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // Handle error response
+            }
+        });
+        queue.add(jsonObjectRequest);
+        url = "https://api.sunrise-sunset.org/json?lat=40.4165&lng=-3.70256&date=today";
+        JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -61,10 +90,8 @@ public class Home extends Fragment {
                             LocalTime time = LocalTime.parse(sunset, formatter);
                             LocalTime horaMas2 = time.plusHours(2);
                             horaFormateada = time.format(formatter);
-                            String inicio=horaMas2.format(formatter);
+                            String inicio = horaMas2.format(formatter);
                             textView3.setText(inicio);
-
-                            LocalTime now = LocalTime.now();
                             formatter = DateTimeFormatter.ofPattern("h:mm:ss a");
                             LocalTime anochecer = null;
                             if (horaFormateada != null && !horaFormateada.isEmpty()) {
@@ -73,7 +100,7 @@ public class Home extends Fragment {
                                 LocalTime hora = LocalTime.of(22, 30);
                                 anochecer = hora;
                             }
-                            long diffSeconds = ChronoUnit.SECONDS.between(now, anochecer);
+                            diffSeconds = ChronoUnit.SECONDS.between(now, anochecer);
                             new CountDownTimer(diffSeconds * 1000, 1000) {//cambiar por diffSeconds*1000 cuando no haya que hacer pruebas
 
                                 public void onTick(long millisUntilFinished) {
@@ -111,8 +138,6 @@ public class Home extends Fragment {
                     }
                 });
 
-        queue.add(jsonObjectRequest);
-
+        queue.add(jsonObjectRequest2);
     }
-
 }
