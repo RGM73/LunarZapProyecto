@@ -102,57 +102,56 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         holder.likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Query query = db.collection("zaps").whereEqualTo("Username", zap.getUsuario());
+                Query query = db.collection("zaps").whereEqualTo("usuario", zap.getUsuario());
                 query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
-                        DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
-
-                        document.getReference().update("likes", zap.getLikes() + 1)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d(TAG, "DocumentSnapshot successfully updated!");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w(TAG, "Error updating document", e);
-                                    }
-                                });
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
+                            document.getReference().update("likes", zap.getLikes() + 1)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(TAG, "DocumentSnapshot successfully updated!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w(TAG, "Error updating document", e);
+                                        }
+                                    });
+                        }
                     }
                 });
-
             }
         });
+
         holder.dislikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Query query = db.collection("zaps").whereEqualTo("Username", zap.getUsuario());
+                Query query = db.collection("zaps").whereEqualTo("usuario", zap.getUsuario());
                 query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
-                        DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
-
-                        document.getReference().update("dislikes", zap.getDislikes() + 1)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d(TAG, "DocumentSnapshot successfully updated!");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w(TAG, "Error updating document", e);
-                                    }
-                                });
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
+                            document.getReference().update("dislikes", zap.getDislikes() + 1)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d(TAG, "DocumentSnapshot successfully updated!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w(TAG, "Error updating document", e);
+                                        }
+                                    });
+                        }
                     }
                 });
-
             }
         });
 
